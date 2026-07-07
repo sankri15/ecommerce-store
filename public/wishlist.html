@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your Wishlist on GlowMart">
+    <title>Wishlist – GlowMart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .wishlist-container { max-width: 1200px; margin: 0 auto; padding: 40px 60px; }
+        .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; margin-top: 24px; }
+        
+        .wishlist-card {
+            background: var(--white);
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-xs);
+        }
+        
+        .wishlist-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            border-color: #e8d0da;
+        }
+        
+        .wishlist-card-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+            background: #f8f8f8;
+        }
+        
+        .wishlist-card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .wishlist-brand { color: var(--dark); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+        .wishlist-name { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        
+        .wishlist-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .price-current { font-weight: 700; font-size: 1rem; color: var(--dark); }
+        .price-original { font-size: 0.8rem; color: var(--text-light); text-decoration: line-through; }
+        .price-discount { font-size: 0.78rem; font-weight: 700; color: var(--teal); }
+        
+        .wishlist-actions {
+            border-top: 1px solid var(--border-light);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .wishlist-actions button {
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn-move { color: var(--primary); border-right: 1px solid var(--border-light); }
+        .btn-move:hover { background: #fff5f8; }
+        
+        .btn-remove { color: var(--text-light); }
+        .btn-remove:hover { color: var(--dark); background: #f9f9f9; }
+        
+        .remove-cross {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+        .remove-cross:hover { color: var(--primary); transform: scale(1.1); }
+        
+        .empty-wishlist { text-align: center; padding: 80px 20px; }
+        .empty-icon { font-size: 64px; margin-bottom: 20px; color: var(--text-light); }
+        
+        @media (max-width: 768px) {
+            .wishlist-container { padding: 20px 16px; }
+            .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .wishlist-card-img { height: 220px; }
+            .wishlist-actions button { font-size: 0.75rem; padding: 10px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <a href="index.html" class="logo-text">🛍️ GlowMart</a>
+        <div class="header-search">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search for products, brands and more">
+        </div>
+        <nav class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="index.html#categories">Categories</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="profile.html" class="nav-icon-btn">
+                <span class="icon-emoji">👤</span>
+                <span class="icon-label">Profile</span>
+            </a>
+            <a href="wishlist.html" class="nav-icon-btn" style="color:var(--primary);">
+                <span class="icon-emoji">🤍</span>
+                <span class="icon-label">Wishlist</span>
+            </a>
+            <a href="cart.html" class="nav-icon-btn">
+                <span class="icon-emoji">🛒</span>
+                <span class="icon-label">Bag</span>
+                <span class="cart-badge" id="cart-count">0</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="wishlist-container">
+    <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--dark);">My Wishlist <span id="wishlist-count" style="font-family:'Inter',sans-serif; font-size:1.1rem; color:var(--text-light); font-weight:400;"></span></h1>
+    
+    <div class="wishlist-grid" id="wishlist-grid">
+        <!-- Injected via JS -->
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍️ GlowMart</div>
+            <p class="footer-desc">India's premium fashion & lifestyle destination. Discover curated collections from top brands with the best deals, fast delivery, and easy returns.</p>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/sanjpal" target="_blank" class="social-btn" title="LinkedIn">💼</a>
+                <a href="mailto:sanjanapal004@gmail.com" class="social-btn" title="Email">📧</a>
+                <a href="https://github.com/sankri15" target="_blank" class="social-btn" title="GitHub">📸</a>
+                <a href="#" class="social-btn" title="Back to Top">🐦</a>
+            </div>
+        </div>
+        <div>
+            <div class="footer-heading">Quick Links</div>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#categories">Categories</a></li>
+                <li><a href="wishlist.html">My Wishlist</a></li>
+                <li><a href="cart.html">My Cart</a></li>
+                <li><a href="profile.html">My Profile</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">Customer Care</div>
+            <ul class="footer-links">
+                <li><a href="#">Track Order</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">100% Secure</div>
+            <p style="color:rgba(255,255,255,0.45);font-size:0.85rem;line-height:1.6;">Safe payments via Razorpay, Credit/Debit Cards, UPI, and Cash on Delivery.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2026 <strong>GlowMart</strong>. All rights reserved. Made with ❤️ by <a href="https://www.linkedin.com/in/sanjpal" target="_blank">Sanjana Pal</a></div>
+    </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!api.isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    loadWishlist();
+});
+
+async function loadWishlist() {
+    try {
+        const items = await api.getWishlist();
+        const grid = document.getElementById('wishlist-grid');
+        
+        document.getElementById('wishlist-count').textContent = `- ${items.length} items`;
+        
+        if (items.length === 0) {
+            grid.style.display = 'block';
+            grid.innerHTML = `
+                <div class="empty-wishlist">
+                    <div class="empty-icon">🤍</div>
+                    <h2 style="font-family:'Playfair Display',serif; margin-bottom:12px; color:var(--dark);">Your wishlist is empty</h2>
+                    <p style="color:var(--text-muted); margin-bottom:24px;">Save items that you like in your wishlist. Review them anytime and easily move them to the bag.</p>
+                    <a href="index.html" class="btn-secondary" style="border-radius:4px; padding:12px 30px;">Continue Shopping</a>
+                </div>
+            `;
+            return;
+        }
+        
+        grid.style.display = 'grid';
+        grid.innerHTML = items.map(item => {
+            const origPrice = Math.round(item.price * 1.3);
+            return `
+                <div class="wishlist-card">
+                    <button class="remove-cross" onclick="removeWishlist(${item.id})" title="Remove">×</button>
+                    <a href="product.html?id=${item.id}" style="text-decoration:none; display:block;">
+                        <img src="${item.image}" alt="${item.name}" class="wishlist-card-img" onerror="this.src='https://via.placeholder.com/400x530?text=GlowMart'">
+                    </a>
+                    <div class="wishlist-card-body">
+                        <div class="wishlist-brand">${item.brand || 'GlowMart'}</div>
+                        <a href="product.html?id=${item.id}" style="text-decoration:none;">
+                            <div class="wishlist-name">${item.name}</div>
+                        </a>
+                        <div class="wishlist-price-row">
+                            <span class="price-current">₹${item.price.toLocaleString()}</span>
+                            <span class="price-original">₹${origPrice.toLocaleString()}</span>
+                            <span class="price-discount">(30% OFF)</span>
+                        </div>
+                    </div>
+                    <div class="wishlist-actions">
+                        <button class="btn-move" onclick='moveToCart(${JSON.stringify(item)})'>Move to Bag</button>
+                        <button class="btn-remove" onclick="removeWishlist(${item.id})">Remove</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        console.error(e);
+        showToast('Failed to load wishlist');
+    }
+}
+
+function moveToCart(product) {
+    cart.add(product);
+    showToast(`${product.name} moved to bag!`);
+    removeWishlist(product.id, true);
+}
+
+async function removeWishlist(productId, silent = false) {
+    try {
+        await api.removeFromWishlist(productId);
+        if(!silent) showToast('Removed from wishlist');
+        loadWishlist();
+    } catch(e) {
+        console.error(e);
+        if(!silent) showToast('Could not remove item');
+    }
+}
+</script>
+</body>
+</html>

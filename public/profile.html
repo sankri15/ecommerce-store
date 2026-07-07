@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile – GlowMart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-layout { display: grid; grid-template-columns: 260px 1fr; gap: 28px; max-width: 1200px; margin: 0 auto; padding: 40px 60px; }
+        .profile-sidebar { position: sticky; top: 90px; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #f43f5e); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 14px; }
+        .sidebar-name { text-align: center; font-weight: 700; font-size: 1rem; }
+        .sidebar-email { text-align: center; color: rgba(255,255,255,0.45); font-size: 0.8rem; margin-top: 4px; margin-bottom: 20px; }
+        .sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-nav li a { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active { background: rgba(124,58,237,0.2); color: white; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .order-row { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 14px; padding: 18px; margin-bottom: 14px; backdrop-filter: blur(8px); }
+        .order-row:hover { border-color: rgba(124,58,237,0.3); }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .status-Pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .status-Processing { background: rgba(6,182,212,0.15); color: #06b6d4; }
+        .status-Shipped { background: rgba(124,58,237,0.15); color: #9d65f5; }
+        .status-Delivered { background: rgba(74,222,128,0.15); color: #4ade80; }
+        .status-Cancelled { background: rgba(244,63,94,0.15); color: #f43f5e; }
+        @media (max-width: 768px) { .profile-layout { grid-template-columns: 1fr; padding: 20px 16px; } .profile-sidebar { position: static; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <a href="index.html" class="logo-text">🛍️ GlowMart</a>
+        <nav class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="index.html#categories">Categories</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="wishlist.html" class="nav-icon-btn">🤍</a>
+            <a href="cart.html" class="nav-icon-btn">🛒 <span class="cart-badge" id="cart-count">0</span></a>
+        </div>
+    </div>
+</header>
+
+<div class="profile-layout">
+    <!-- SIDEBAR -->
+    <div class="profile-sidebar glass" style="padding:24px;">
+        <div class="profile-avatar">👤</div>
+        <div class="sidebar-name" id="sidebar-name" style="color:black;">Loading…</div>
+        <div class="sidebar-email" id="sidebar-email" style="color:black;">—</div>
+        <ul class="sidebar-nav">
+            <li><a href="#" class="active" onclick="switchTab('orders',this)" style="color:black;font-weight:600;">📦 My Orders</a></li>
+            <li><a href="#" onclick="switchTab('wishlist',this)" style="color:black;font-weight:600;">❤️ My Wishlist</a></li>
+            <li><a href="#" onclick="switchTab('profile',this)" style="color:black;font-weight:600;">✏️ Edit Profile</a></li>
+            <li><a href="cart.html" style="color:black;font-weight:600;">🛒 My Cart</a></li>
+            <li><a href="#" onclick="api.logout()" style="color:black;font-weight:600;">🚪 Logout</a></li>
+        </ul>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:20px 0;">
+        <div style="font-size:0.8rem;text-align:center;line-height:1.8;margin-top:10px;">
+            <div style="color:#fbbf24;font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:0.7rem;">Created by</div>
+            <div style="color:#f43f5e;font-weight:700;font-size:1.05rem;text-shadow:0 0 8px rgba(244,63,94,0.4);">Sanjana Pal</div>
+            <div><a href="mailto:sanjanapal004@gmail.com" style="color:#0fe0ff;text-decoration:none;font-weight:500;">sanjanapal004@gmail.com</a></div>
+            <div><a href="https://www.linkedin.com/in/sanjpal" target="_blank" style="color:#4ade80;text-decoration:none;font-weight:500;">💼 linkedin.com/in/sanjpal</a></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div>
+        <!-- Orders Tab -->
+        <div class="tab-pane active" id="tab-orders">
+            <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:20px;">📦 My Orders</h2>
+            <div id="orders-list" style="background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(124,58,237,0.05)); border: 1px solid rgba(6,182,212,0.2); border-radius: 16px; padding: 24px;">
+                <div class="skeleton" style="height:80px;border-radius:14px;margin-bottom:12px;"></div>
+                <div class="skeleton" style="height:80px;border-radius:14px;margin-bottom:12px;"></div>
+            </div>
+        </div>
+
+        <!-- Profile Edit Tab -->
+        <div class="tab-pane" id="tab-profile">
+            <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:20px;">✏️ Edit Profile</h2>
+            <div style="background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(14,165,233,0.05)); border: 1px solid rgba(56,189,248,0.3); border-radius: 16px; padding: 28px; backdrop-filter: blur(10px);">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="edit-name" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="edit-email" placeholder="Email" disabled style="opacity:0.5;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="edit-phone" placeholder="10-digit mobile number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Default Delivery Address</label>
+                    <textarea class="form-input" id="edit-address" rows="3" placeholder="Enter your full address" style="resize:vertical;"></textarea>
+                </div>
+                <button class="btn-primary" onclick="saveProfile()">💾 Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Wishlist Tab -->
+        <div class="tab-pane" id="tab-wishlist">
+            <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:20px;">❤️ My Wishlist</h2>
+            <div id="wishlist-section" style="background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(124,58,237,0.05)); border: 1px solid rgba(244,63,94,0.2); border-radius: 16px; padding: 24px;">
+                <div class="skeleton" style="height:80px;border-radius:14px;margin-bottom:12px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function switchTab(tab, linkEl) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    if (linkEl) linkEl.classList.add('active');
+}
+
+async function loadProfile() {
+    if (!api.isLoggedIn()) { window.location.href = 'login.html'; return; }
+    try {
+        const profile = await api.getProfile();
+        document.getElementById('sidebar-name').textContent = profile.name || 'User';
+        document.getElementById('sidebar-email').textContent = profile.email || '';
+        document.getElementById('edit-name').value = profile.name || '';
+        document.getElementById('edit-email').value = profile.email || '';
+        document.getElementById('edit-phone').value = profile.phone || '';
+        document.getElementById('edit-address').value = profile.address || '';
+    } catch(e) {}
+}
+
+async function loadOrders() {
+    const list = document.getElementById('orders-list');
+    try {
+        const res = await fetch('/api/orders/my', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+        const orders = await res.json();
+        if (!orders.length) {
+            list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4);">
+                <div style="font-size:48px;margin-bottom:16px;">📦</div>
+                <h3 style="color:white;margin-bottom:8px;">No orders yet</h3>
+                <p>Start shopping to see your orders here!</p>
+                <a href="index.html" class="btn-primary" style="margin-top:20px;display:inline-block;">🛍️ Shop Now</a>
+            </div>`;
+            return;
+        }
+
+        function getDeliverySteps(status, orderDate) {
+            const placed = new Date(orderDate);
+            const shipped = new Date(placed); shipped.setDate(placed.getDate() + 1);
+            const outForDelivery = new Date(placed); outForDelivery.setDate(placed.getDate() + 3);
+            const delivered = new Date(placed); delivered.setDate(placed.getDate() + 5);
+            const fmt = d => d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+
+            const steps = [
+                { icon: '✅', label: 'Order Placed', date: fmt(placed), done: true },
+                { icon: '📦', label: 'Packed & Ready', date: fmt(shipped), done: ['Shipped','Out for Delivery','Delivered'].includes(status) },
+                { icon: '🚚', label: 'Shipped', date: fmt(shipped), done: ['Shipped','Out for Delivery','Delivered'].includes(status) },
+                { icon: '🏍️', label: 'Out for Delivery', date: fmt(outForDelivery), done: ['Out for Delivery','Delivered'].includes(status) },
+                { icon: '🎉', label: 'Delivered', date: fmt(delivered), done: status === 'Delivered' }
+            ];
+            return { steps, estimatedDelivery: fmt(delivered) };
+        }
+
+        list.innerHTML = orders.map(o => {
+            const { steps, estimatedDelivery } = getDeliverySteps(o.status || 'Pending', o.created_at);
+            const statusColors = {
+                'Pending': '#fbbf24', 'Processing': '#06b6d4',
+                'Shipped': '#9d65f5', 'Out for Delivery': '#f97316',
+                'Delivered': '#4ade80', 'Cancelled': '#f43f5e'
+            };
+            const color = statusColors[o.status] || '#fbbf24';
+
+            return `
+            <div class="order-row" style="margin-bottom:24px;">
+                <!-- Order Header -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                    <div style="color:black;">
+                        <div style="font-weight:700;font-size:1rem;">Order #${o.id}</div>
+                        <div style="font-size:0.82rem;margin-top:4px;color:#444;">
+                            📅 Placed on ${new Date(o.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}
+                        </div>
+                        <div style="font-size:0.82rem;margin-top:4px;color:#444;">📍 ${o.shipping_address || 'N/A'}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:800;font-size:1.1rem;color:black;">₹${o.total?.toLocaleString()}</div>
+                        <div style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:6px;background:${color}22;color:${color};border:1px solid ${color}44;">
+                            ${o.status || 'Order Placed'}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estimated Delivery -->
+                ${o.status !== 'Cancelled' ? `
+                <div style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:10px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.2rem;">🚚</span>
+                    <div>
+                        <div style="font-weight:700;color:black;font-size:0.88rem;">
+                            ${o.status === 'Delivered' ? '✅ Delivered!' : `Estimated Delivery: ${estimatedDelivery}`}
+                        </div>
+                        <div style="color:#555;font-size:0.78rem;">
+                            ${o.status === 'Delivered' ? 'Your order has been delivered.' : 'Delivery within 4–5 business days from order date'}
+                        </div>
+                    </div>
+                </div>` : ''}
+
+                <!-- Delivery Timeline -->
+                <div style="padding:12px 0 4px;overflow-x:auto;">
+                    <div style="display:flex;align-items:flex-start;min-width:420px;position:relative;">
+                        <!-- Line behind steps -->
+                        <div style="position:absolute;top:18px;left:18px;right:18px;height:3px;background:rgba(255,255,255,0.1);z-index:0;border-radius:2px;">
+                            <div style="height:100%;width:${steps.filter(s=>s.done).length > 1 ? Math.min(100, (steps.filter(s=>s.done).length - 1) * 25) : 0}%;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:2px;transition:width 0.5s;"></div>
+                        </div>
+                        ${steps.map(step => `
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
+                            <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+                                background:${step.done ? 'linear-gradient(135deg,#7c3aed,#06b6d4)' : 'rgba(255,255,255,0.1)'};
+                                border:2px solid ${step.done ? '#7c3aed' : 'rgba(255,255,255,0.2)'};
+                                box-shadow:${step.done ? '0 4px 12px rgba(124,58,237,0.4)' : 'none'};
+                                transition:all 0.3s;">
+                                ${step.done ? step.icon : '⬜'}
+                            </div>
+                            <div style="margin-top:8px;text-align:center;">
+                                <div style="font-size:0.7rem;font-weight:600;color:${step.done ? 'black' : '#888'};">${step.label}</div>
+                                <div style="font-size:0.65rem;color:#666;margin-top:2px;">${step.date}</div>
+                            </div>
+                        </div>`).join('')}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        list.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;padding:40px;">Could not load orders.</p>';
+    }
+}
+
+
+async function saveProfile() {
+    const name = document.getElementById('edit-name').value;
+    const phone = document.getElementById('edit-phone').value;
+    const address = document.getElementById('edit-address').value;
+    try {
+        const res = await api.updateProfile(name, address, phone);
+        if (res.message) {
+            showToast('✅ Profile updated!');
+            document.getElementById('sidebar-name').textContent = name;
+        } else {
+            showToast(res.error || 'Failed to update');
+        }
+    } catch(e) {
+        showToast('Failed to update profile');
+    }
+}
+
+async function loadWishlistHistory() {
+    const section = document.getElementById('wishlist-section');
+    try {
+        const items = await api.getWishlist();
+        if (!items.length) {
+            section.innerHTML = `<div style="text-align:center;padding:50px 20px;color:rgba(255,255,255,0.4);">
+                <div style="font-size:48px;margin-bottom:16px;">🤍</div>
+                <h3 style="color:white;margin-bottom:8px;">Your wishlist is empty</h3>
+                <p>Save items you love and they'll show up here!</p>
+                <a href="index.html" class="btn-primary" style="margin-top:20px;display:inline-block;">🛍️ Browse Products</a>
+            </div>`;
+            return;
+        }
+        section.innerHTML = `<div style="font-size:0.85rem;color:#888;margin-bottom:16px;">${items.length} item(s) saved</div>` +
+        items.map(item => `
+            <div style="display:flex;gap:16px;align-items:center;padding:14px;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.15);border-radius:12px;margin-bottom:12px;">
+                <img src="${item.image}" alt="${item.name}" style="width:70px;height:85px;object-fit:cover;border-radius:10px;" onerror="this.src='https://via.placeholder.com/70x85?text=GlowMart'">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.72rem;color:#f43f5e;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">${item.brand || 'GlowMart'}</div>
+                    <div style="color:black;font-weight:600;font-size:0.9rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+                    <div style="color:black;font-weight:700;font-size:1rem;margin-top:4px;">₹${item.price?.toLocaleString()}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <button onclick="moveWishlistToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})" style="padding:8px 14px;background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;border-radius:8px;color:white;font-size:0.75rem;font-weight:600;cursor:pointer;">🛒 Add to Bag</button>
+                    <button onclick="removeFromWishlistProfile(${item.id})" style="padding:6px 14px;background:transparent;border:1px solid rgba(244,63,94,0.3);border-radius:8px;color:#f43f5e;font-size:0.72rem;font-weight:600;cursor:pointer;">✕ Remove</button>
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {
+        section.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;padding:40px;">Could not load wishlist.</p>';
+    }
+}
+
+function moveWishlistToCart(product) {
+    cart.add(product);
+    showToast('✅ ' + product.name + ' added to bag!');
+}
+
+async function removeFromWishlistProfile(productId) {
+    try {
+        await api.removeFromWishlist(productId);
+        showToast('Removed from wishlist');
+        loadWishlistHistory();
+    } catch(e) { showToast('Could not remove item'); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+    loadOrders();
+    loadWishlistHistory();
+});
+</script>
+</body>
+</html>

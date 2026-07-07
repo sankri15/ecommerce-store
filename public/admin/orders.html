@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .admin-layout { display: flex; min-height: 100vh; background: #f8f9fa; }
+        .admin-sidebar { width: 250px; background: white; padding: 2rem; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .admin-sidebar h2 { color: #ff3e6c; margin-bottom: 2rem; }
+        .admin-nav { display: flex; flex-direction: column; gap: 1rem; }
+        .admin-nav a { padding: 0.8rem; border-radius: 8px; color: #333; text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .admin-nav a:hover, .admin-nav a.active { background: #ff3e6c; color: white; }
+        .admin-main { flex: 1; padding: 2rem; }
+        
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; }
+        
+        .status-select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+        .btn-update { padding: 0.5rem 1rem; background: #282c3f; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <h2>GlowMart Admin</h2>
+            <nav class="admin-nav">
+                <a href="index.html">Dashboard</a>
+                <a href="products.html">Products</a>
+                <a href="categories.html">Categories</a>
+                <a href="orders.html" class="active">Orders</a>
+                <a href="users.html">Users</a>
+                <a href="../index.html" style="margin-top: 2rem; background: #eee;">← Back to Store</a>
+            </nav>
+        </aside>
+        
+        <main class="admin-main">
+            <h1 style="margin-bottom: 2rem;">Manage Orders</h1>
+            
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Shipping Address</th>
+                                <th>Status / Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr><td colspan="6">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!api.getUser() || api.getUser().role !== 'admin') return window.location.href = '../index.html';
+            loadOrders();
+        });
+
+        async function loadOrders() {
+            try {
+                const orders = await api.getAdminOrders();
+                const tbody = document.getElementById('ordersTableBody');
+                if(orders.length === 0) return tbody.innerHTML = '<tr><td colspan="6">No orders found.</td></tr>';
+                
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td>${o.user_name}</td>
+                        <td>${new Date(o.created_at).toLocaleString()}</td>
+                        <td>₹${o.total}</td>
+                        <td><small>${o.shipping_address || 'N/A'}</small></td>
+                        <td>
+                            <select id="status-${o.id}" class="status-select">
+                                <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                            <button class="btn-update" onclick="updateStatus(${o.id})">Update</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function updateStatus(id) {
+            const status = document.getElementById(`status-${id}`).value;
+            try {
+                const res = await api.updateOrderStatus(id, status);
+                if (res.message) {
+                    Swal.fire('Updated', `Order #${id} marked as ${status}. Email sent to customer if Shipped/Delivered.`, 'success');
+                } else {
+                    Swal.fire('Error', res.error, 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error', 'Failed to update', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

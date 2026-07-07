@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GlowMart – India's most stylish online fashion & lifestyle store. Shop Men, Women, Kids, Beauty & Home with 3D-premium experience.">
+    <title>GlowMart – Shop with Style, Shop with Glow ✨</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-image-wrapper {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 55%;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+            filter: saturate(1.4);
+        }
+        .hero-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, #0d0521 15%, transparent 60%);
+            z-index: 2;
+        }
+        .features-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            background: rgba(255,255,255,0.04);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 36px;
+            border-right: 1px solid rgba(255,255,255,0.07);
+            white-space: nowrap;
+        }
+        .feature-item:last-child { border-right: none; }
+        .feature-icon { font-size: 22px; }
+        .feature-text strong { display: block; color: white; font-size: 0.88rem; font-weight: 600; }
+        .feature-text span { color: rgba(255,255,255,0.45); font-size: 0.76rem; }
+        .view-all-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124,58,237,0.15);
+            border: 1px solid rgba(124,58,237,0.35);
+            color: #9d65f5;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .view-all-btn:hover { background: rgba(124,58,237,0.3); color: white; }
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 32px;
+        }
+        .tab-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 9px 22px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            border-color: transparent;
+            color: white;
+        }
+        .no-products {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            padding: 60px 20px;
+            font-size: 1rem;
+        }
+        .empty-cart-msg {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255,255,255,0.5);
+        }
+        .empty-cart-msg .emoji { font-size: 60px; margin-bottom: 16px; }
+        .empty-cart-msg h3 { color: white; font-size: 1.3rem; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-top">
+        <a href="index.html" class="logo-text">🛍️ GlowMart</a>
+        <div class="header-search">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search for products, brands & more…" autocomplete="off">
+        </div>
+        <nav class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="index.html#men">Men</a>
+            <a href="index.html#women">Women</a>
+            <a href="index.html#kids">Kids</a>
+            <a href="index.html#beauty">Beauty</a>
+            <a href="#featured" onclick="filterByFeature('Best Seller')">Best Sellers</a>
+            <a href="support.html">Customer Service</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="wishlist.html" class="nav-icon-btn" title="Wishlist">🤍</a>
+            <a href="cart.html" class="nav-icon-btn" title="Cart">
+                🛒
+                <span class="cart-badge" id="cart-count">0</span>
+            </a>
+            <span class="nav-icon-btn" id="auth-icon-btn" onclick="handleAuthClick()" title="Account">👤</span>
+        </div>
+    </div>
+
+    <!-- MARQUEE STRIP -->
+    <div class="marquee-strip">
+        <div class="marquee-track" id="marqueeTrack">
+            <!-- filled by JS -->
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-image-wrapper">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80" alt="Fashion">
+    </div>
+    <div class="hero-content">
+        <div class="hero-tag">✨ New Season Collection 2026</div>
+        <h1 class="hero-title">
+            Style That<br>
+            <span class="highlight">Glows</span> With<br>
+            <span class="highlight2">You</span>
+        </h1>
+        <p class="hero-sub">Discover 1000+ curated fashion picks, beauty essentials & home décor. Free delivery on orders above ₹999.</p>
+        <div class="hero-cta">
+            <a href="#featured" class="btn-primary">🛍️ Shop Now</a>
+            <a href="#categories" class="btn-secondary">Explore Categories →</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="num">80+</div>
+                <div class="label">PRODUCTS</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">10+</div>
+                <div class="label">BRANDS</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">14-Day</div>
+                <div class="label">EASY RETURNS</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">100%</div>
+                <div class="label">ORIGINALS</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PROMO SLIDER -->
+<div class="promo-slider-container">
+    <div class="promo-slider">
+        <!-- Women -->
+        <div class="promo-slide">
+            <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&h=400&fit=crop" alt="Women's Fashion">
+            <div class="promo-slide-text">
+                <h2>Women's Fashion</h2>
+                <p>Up to 50% Off Top Brands</p>
+                <button class="btn-primary" onclick="filterByCategory('Women'); window.location.hash='#categories'">Shop Women</button>
+            </div>
+        </div>
+        <!-- Men -->
+        <div class="promo-slide">
+            <img src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=1200&h=400&fit=crop" alt="Men's Collection">
+            <div class="promo-slide-text">
+                <h2>Men's Collection</h2>
+                <p>Flat 10% Off New Arrivals</p>
+                <button class="btn-primary" onclick="filterByCategory('Men'); window.location.hash='#categories'">Shop Men</button>
+            </div>
+        </div>
+        <!-- Beauty/Makeup -->
+        <div class="promo-slide">
+            <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=1200&h=400&fit=crop" alt="Beauty & Makeup">
+            <div class="promo-slide-text">
+                <h2>Beauty & Makeup</h2>
+                <p>Glow Every Day with Premium Cosmetics</p>
+                <button class="btn-primary" onclick="filterByCategory('Beauty'); window.location.hash='#categories'">Shop Beauty</button>
+            </div>
+        </div>
+        <!-- Kids -->
+        <div class="promo-slide">
+            <img src="https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?w=1200&h=400&fit=crop" alt="Kids Fashion">
+            <div class="promo-slide-text">
+                <h2>Kids Fashion</h2>
+                <p>Adorable Trends for the Little Ones</p>
+                <button class="btn-primary" onclick="filterByCategory('Kids'); window.location.hash='#categories'">Shop Kids</button>
+            </div>
+        </div>
+        <!-- Home Decor -->
+        <div class="promo-slide">
+            <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&h=400&fit=crop" alt="Home Decor">
+            <div class="promo-slide-text">
+                <h2>Home Decor</h2>
+                <p>Transform Your Space Into a Sanctuary</p>
+                <button class="btn-primary" onclick="filterByCategory('Home'); window.location.hash='#categories'">Shop Home</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section" id="categories">
+    <div class="section-header">
+        <div class="section-tag">BROWSE BY CATEGORY</div>
+        <h2 class="section-title">Shop by Category</h2>
+        <p class="section-subtitle">Find exactly what you're looking for</p>
+    </div>
+    <div class="category-grid">
+        <a href="#men" class="category-card" style="background: #E6E6FA; color: black;" onclick="filterByCategory('Men')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">👔</div>
+            <div class="category-name" style="color: black;">Men</div>
+            <div class="category-count" style="color: #333;">12 items</div>
+        </a>
+        <a href="#women" class="category-card" style="background: #FFD1DC; color: black;" onclick="filterByCategory('Women')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">👗</div>
+            <div class="category-name" style="color: black;">Women</div>
+            <div class="category-count" style="color: #333;">12 items</div>
+        </a>
+        <a href="#kids" class="category-card" style="background: #AEC6CF; color: black;" onclick="filterByCategory('Kids')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">🧒</div>
+            <div class="category-name" style="color: black;">Kids</div>
+            <div class="category-count" style="color: #333;">8 items</div>
+        </a>
+        <a href="#footwear" class="category-card" style="background: #FDFD96; color: black;" onclick="filterByCategory('Footwear')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">👟</div>
+            <div class="category-name" style="color: black;">Footwear</div>
+            <div class="category-count" style="color: #333;">12 items</div>
+        </a>
+        <a href="#beauty" class="category-card" style="background: #CBAACB; color: black;" onclick="filterByCategory('Beauty')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">💄</div>
+            <div class="category-name" style="color: black;">Beauty</div>
+            <div class="category-count" style="color: #333;">8 items</div>
+        </a>
+        <a href="#accessories" class="category-card" style="background: #FFB347; color: black;" onclick="filterByCategory('Accessories')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">💍</div>
+            <div class="category-name" style="color: black;">Accessories</div>
+            <div class="category-count" style="color: #333;">8 items</div>
+        </a>
+        <a href="#home-decor" class="category-card" style="background: #77DD77; color: black;" onclick="filterByCategory('Home')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">🏠</div>
+            <div class="category-name" style="color: black;">Home</div>
+            <div class="category-count" style="color: #333;">8 items</div>
+        </a>
+        <a href="#" class="category-card" style="background: #EAEAEA; color: black;" onclick="filterByCategory('')">
+            <div class="category-icon" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1);">⭐</div>
+            <div class="category-name" style="color: black;">All Items</div>
+            <div class="category-count" style="color: #333;">View all</div>
+        </a>
+    </div>
+
+    <div class="brand-filters-container">
+        <h3 class="brand-filters-title">Filter by Brand</h3>
+        <div class="brand-filters">
+            <button class="brand-btn active" onclick="filterByBrand('')">All Brands</button>
+            <button class="brand-btn" onclick="filterByBrand('Roadster')">Roadster</button>
+            <button class="brand-btn" onclick="filterByBrand('Wrangler')">Wrangler</button>
+            <button class="brand-btn" onclick="filterByBrand('Nauti Nati')">Nauti Nati</button>
+            <button class="brand-btn" onclick="filterByBrand('GlowMart')">GlowMart</button>
+        </div>
+    </div>
+</section>
+
+<!-- PROMO BANNERS -->
+<div style="padding: 0 60px; margin-bottom: 20px;">
+    <div class="promo-grid">
+        <div class="promo-card promo-1" onclick="filterByCategory('Women')">
+            <div class="promo-tag">WOMEN'S COLLECTION</div>
+            <div class="promo-title">Up to 50% Off<br>Women's Fashion</div>
+            <div class="promo-desc">Dresses, Kurtas, Sarees & more</div>
+            <span class="promo-btn">Shop Women →</span>
+        </div>
+        <div class="promo-card promo-2" onclick="filterByCategory('Men')">
+            <div class="promo-tag">MEN'S ESSENTIALS</div>
+            <div class="promo-title">New Arrivals<br>for Men</div>
+            <div class="promo-desc">Shirts, Jeans, Jackets & more</div>
+            <span class="promo-btn">Shop Men →</span>
+        </div>
+    </div>
+</div>
+
+<!-- ALL PRODUCTS -->
+<section class="section" id="featured">
+    <div class="section-header-row">
+        <div>
+            <div class="section-tag">OUR COLLECTION</div>
+            <h2 class="section-title">All Products</h2>
+            <p class="section-subtitle">Handpicked just for you</p>
+        </div>
+    </div>
+    <div class="tab-row" id="categoryTabs">
+        <button class="tab-btn active" onclick="filterByCategory('', this)">All</button>
+        <button class="tab-btn" onclick="filterByCategory('Men', this)">Men</button>
+        <button class="tab-btn" onclick="filterByCategory('Women', this)">Women</button>
+        <button class="tab-btn" onclick="filterByCategory('Kids', this)">Kids</button>
+        <button class="tab-btn" onclick="filterByCategory('Footwear', this)">Footwear</button>
+        <button class="tab-btn" onclick="filterByCategory('Beauty', this)">Beauty</button>
+        <button class="tab-btn" onclick="filterByCategory('Accessories', this)">Accessories</button>
+        <button class="tab-btn" onclick="filterByCategory('Home', this)">Home</button>
+    </div>
+    <div class="products-grid" id="productsGrid">
+        <!-- Skeleton loaders -->
+        ${Array(8).fill(0).map(() => `
+        <div class="product-card" style="pointer-events:none;">
+            <div class="skeleton" style="height:260px;border-radius:18px 18px 0 0;"></div>
+            <div style="padding:14px 16px;">
+                <div class="skeleton" style="height:12px;width:50%;margin-bottom:10px;"></div>
+                <div class="skeleton" style="height:16px;width:85%;margin-bottom:8px;"></div>
+                <div class="skeleton" style="height:14px;width:40%;"></div>
+            </div>
+        </div>`).join('')}
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍️ GlowMart</div>
+            <p class="footer-desc">India's premium fashion & lifestyle destination. Discover curated collections from top brands with the best deals, fast delivery, and easy returns.</p>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/sanjpal" target="_blank" class="social-btn" title="LinkedIn">💼</a>
+                <a href="mailto:sanjanapal004@gmail.com" class="social-btn" title="Email">📧</a>
+                <a href="https://github.com/sankri15" target="_blank" class="social-btn" title="GitHub">📸</a>
+                <a href="#" class="social-btn" title="Back to Top">🐦</a>
+            </div>
+        </div>
+        <div>
+            <div class="footer-heading">Quick Links</div>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="wishlist.html">My Wishlist</a></li>
+                <li><a href="cart.html">My Cart</a></li>
+                <li><a href="profile.html">My Profile</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">Customer Care</div>
+            <ul class="footer-links">
+                <li><a href="#">Track Order</a></li>
+                <li><a href="#">Return & Exchange</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Size Guide</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">Our Policies</div>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Refund Policy</a></li>
+                <li><a href="#">Cookie Policy</a></li>
+            </ul>
+            <div style="margin-top:24px;">
+                <div class="footer-heading" style="font-size:0.85rem;">Contact</div>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.82rem;line-height:1.9;">
+                    📧 sanjanapal004@gmail.com<br>
+                    💼 <a href="https://www.linkedin.com/in/sanjpal" target="_blank" style="color:#9d65f5;">linkedin.com/in/sanjpal</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2025 <strong style="color:#9d65f5;">GlowMart</strong>. All rights reserved. Made with ❤️ by <a href="https://www.linkedin.com/in/sanjpal" target="_blank">Sanjana Pal</a></div>
+        <div style="display:flex;gap:20px;align-items:center;">
+            <span>🔒 Secure Payments</span>
+            <span>🚚 Free Delivery ₹999+</span>
+            <span>🔄 14-Day Returns</span>
+        </div>
+    </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+    let allProducts = [];
+    let currentCategory = '';
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    function handleAuthClick() {
+        if (api.isLoggedIn()) {
+            window.location.href = 'profile.html';
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+
+    function updateAuthIcon() {
+        const btn = document.getElementById('auth-icon-btn');
+        if (!btn) return;
+        if (api.isLoggedIn()) {
+            const user = api.getUser();
+            btn.title = user.name || 'Profile';
+            btn.textContent = '👤';
+        }
+    }
+
+    function discountPct(price) {
+        const originals = { 1299: 1799, 1899: 2499, 1499: 1999, 1999: 2799, 1699: 2299,
+            4999: 6999, 999: 1499, 899: 1299, 2499: 3299, 2199: 2999, 1099: 1499,
+            2999: 3999, 3499: 4999, 599: 899, 2799: 3699, 3999: 5499, 799: 1099,
+            299: 499, 1799: 2299, 1299: 1799, 699: 999, 1199: 1699, 2499: 3299 };
+        return originals[price] || Math.round(price * 1.35);
+    }
+
+    function renderProducts(products) {
+        const grid = document.getElementById('productsGrid');
+        if (!products.length) {
+            grid.innerHTML = '<div class="no-products" style="grid-column:1/-1;">No products found in this category.</div>';
+            return;
+        }
+        const wishlist = JSON.parse(localStorage.getItem('glowmart_wishlist') || '[]');
+        grid.innerHTML = products.map(p => {
+            const orig = discountPct(p.price);
+            const disc = Math.round(((orig - p.price) / orig) * 100);
+            const isWished = wishlist.includes(p.id);
+            const badges = ['NEW', 'HOT', 'SALE', 'TRENDING'];
+            const badge = disc > 25 ? 'SALE' : (p.id % 5 === 0 ? 'HOT' : (p.id % 3 === 0 ? 'TRENDING' : (p.id <= 5 ? 'NEW' : '')));
+            return `
+            <a href="product.html?id=${p.id}" class="product-card" id="pcard-${p.id}">
+                ${badge ? `<span class="badge">${badge}</span>` : ''}
+                <button class="wishlist-btn ${isWished ? 'active' : ''}" onclick="toggleWishlist(event, ${p.id})">${isWished ? '❤️' : '🤍'}</button>
+                <img class="product-card-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x260?text=GlowMart'">
+                <div class="product-card-body">
+                    <div class="product-brand">${p.brand || 'GlowMart'}</div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">
+                        <span class="price-current">₹${p.price.toLocaleString()}</span>
+                        <span class="price-original">₹${orig.toLocaleString()}</span>
+                        ${disc > 0 ? `<span class="price-discount">${disc}% OFF</span>` : ''}
+                    </div>
+                </div>
+            </a>`;
+        }).join('');
+    }
+
+    function filterByCategory(cat, btnEl) {
+        currentCategory = cat;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        const filtered = cat ? allProducts.filter(p => p.category === cat) : allProducts;
+        renderProducts(filtered);
+        document.getElementById('featured').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function filterByBrand(brand, btnEl) {
+        document.querySelectorAll('.brand-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) {
+            btnEl.classList.add('active');
+        } else {
+            // Find the exact button if no event target was passed
+            const btns = document.querySelectorAll('.brand-btn');
+            btns.forEach(b => {
+                if (b.textContent === (brand || 'All Brands')) b.classList.add('active');
+            });
+        }
+        const filtered = brand ? allProducts.filter(p => (p.brand || 'GlowMart') === brand) : allProducts;
+        renderProducts(filtered);
+        document.getElementById('featured').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function filterByFeature(feature) {
+        let filtered = allProducts;
+        if (feature === 'Best Seller') {
+            filtered = allProducts.filter(p => {
+                const orig = discountPct(p.price);
+                const disc = Math.round(((orig - p.price) / orig) * 100);
+                const badge = disc > 25 ? 'SALE' : (p.id % 5 === 0 ? 'HOT' : (p.id % 3 === 0 ? 'TRENDING' : (p.id <= 5 ? 'NEW' : '')));
+                return badge === 'HOT' || badge === 'TRENDING';
+            });
+            showToast('Showing Best Sellers!');
+        } else if (feature === 'Premium') {
+            filtered = allProducts.filter(p => p.price > 2000 || p.brand === 'GlowMart Premium');
+            showToast('Showing GlowMart Premium Items ✨');
+        }
+        renderProducts(filtered);
+    }
+
+    async function toggleWishlist(e, productId) {
+        e.preventDefault();
+        e.stopPropagation();
+        let wl = JSON.parse(localStorage.getItem('glowmart_wishlist') || '[]');
+        const btn = e.currentTarget;
+        if (wl.includes(productId)) {
+            wl = wl.filter(id => id !== productId);
+            btn.textContent = '🤍';
+            btn.classList.remove('active');
+            showToast('Removed from Wishlist');
+            // Also remove from backend
+            try { await api.removeFromWishlist(productId); } catch(err) {}
+        } else {
+            wl.push(productId);
+            btn.textContent = '❤️';
+            btn.classList.add('active');
+            showToast('❤️ Added to Wishlist!');
+            // Also add to backend
+            try { await api.addToWishlist(productId); } catch(err) {}
+        }
+        localStorage.setItem('glowmart_wishlist', JSON.stringify(wl));
+    }
+
+    function buildMarquee(products) {
+        const track = document.getElementById('marqueeTrack');
+        const items = [...products, ...products]; // double for seamless loop
+        track.innerHTML = items.map(p => `
+            <span class="marquee-item">
+                <span class="marquee-dot"></span>
+                <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+                ${p.name} — ₹${p.price.toLocaleString()}
+            </span>
+        `).join('');
+    }
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        const filtered = q ? allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q) || p.category.toLowerCase().includes(q)) : allProducts;
+        renderProducts(filtered);
+    });
+
+    async function init() {
+        try {
+            allProducts = await api.getProducts();
+            buildMarquee(allProducts.slice(0, 20));
+            renderProducts(allProducts);
+            updateAuthIcon();
+        } catch(e) {
+            document.getElementById('productsGrid').innerHTML = '<div class="no-products" style="grid-column:1/-1;">⚠️ Could not load products. Make sure the server is running.</div>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Checkout and place your order on GlowMart">
+    <title>Checkout – GlowMart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 30px; max-width: 1300px; margin: 0 auto; padding: 40px 60px; align-items: start; }
+        .checkout-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 18px; padding: 28px; backdrop-filter: blur(16px); margin-bottom: 20px; }
+        .checkout-card h3 { font-family: 'Space Grotesk',sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .payment-opt { display: flex; align-items: center; gap: 14px; padding: 14px; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; cursor: pointer; margin-bottom: 10px; transition: all 0.2s; }
+        .payment-opt:hover, .payment-opt.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+        .payment-opt input[type=radio] { accent-color: var(--primary); width: 18px; height: 18px; }
+        .payment-label { color: white; font-weight: 500; font-size: 0.92rem; }
+        .payment-sub { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-top: 2px; }
+        .order-item-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .order-item-row:last-child { border-bottom: none; }
+        .order-item-img { width: 60px; height: 72px; object-fit: cover; border-radius: 8px; }
+        @media (max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; padding: 20px 16px; } .form-row { grid-template-columns: 1fr; } .form-row-3 { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <a href="index.html" class="logo-text">🛍️ GlowMart</a>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:rgba(255,255,255,0.5);">
+            <span style="color:#4ade80;">🔒</span> Secure <span style="color:#0fe0ff;font-weight:800;text-shadow:0 0 10px rgba(15,224,255,0.5);">Checkout</span> — 256-bit SSL Encrypted
+        </div>
+        <div class="nav-icons">
+            <a href="cart.html" class="nav-icon-btn">🛒 <span class="cart-badge" id="cart-count">0</span></a>
+        </div>
+    </div>
+</header>
+
+<div style="max-width:1300px;margin:0 auto;padding:24px 60px 0;">
+    <div class="breadcrumb">
+        <a href="cart.html">Cart</a> <span>/</span>
+        <span style="color:#0fe0ff;font-weight:800;text-shadow:0 0 10px rgba(15,224,255,0.5);">Checkout</span>
+    </div>
+</div>
+
+<div class="checkout-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+        <!-- Delivery Address -->
+        <div class="checkout-card">
+            <h3>📦 Delivery Address</h3>
+            <div class="form-row" style="margin-bottom:16px;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">First Name *</label>
+                    <input type="text" class="form-input" id="firstName" placeholder="Sanjana" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Last Name *</label>
+                    <input type="text" class="form-input" id="lastName" placeholder="Pal" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mobile Number *</label>
+                <input type="tel" class="form-input" id="mobile" placeholder="10-digit mobile number" maxlength="10" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Address Line 1 *</label>
+                <input type="text" class="form-input" id="addr1" placeholder="Flat, House no., Building, Company, Apartment" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Address Line 2</label>
+                <input type="text" class="form-input" id="addr2" placeholder="Area, Colony, Street, Sector, Village">
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">City *</label>
+                    <input type="text" class="form-input" id="city" placeholder="Mumbai" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">State *</label>
+                    <input type="text" class="form-input" id="state" placeholder="Maharashtra" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">PIN Code *</label>
+                <input type="text" class="form-input" id="pincode" placeholder="6-digit PIN code" maxlength="6" required>
+            </div>
+        </div>
+
+        <!-- Delivery Speed -->
+        <div class="checkout-card">
+            <h3>🚚 Delivery Options</h3>
+            <div class="payment-opt selected" id="del-standard">
+                <input type="radio" name="delivery" value="standard" checked>
+                <div>
+                    <div class="payment-label"><span style="background:#4ade80;color:black;padding:4px 10px;border-radius:6px;">Standard Delivery — FREE</span></div>
+                    <div class="payment-sub">Delivered in 5–7 business days</div>
+                </div>
+            </div>
+            <div class="payment-opt" id="del-express" onclick="selectDelivery(this, 99)">
+                <input type="radio" name="delivery" value="express">
+                <div>
+                    <div class="payment-label"><span style="background:#fbbf24;color:black;padding:4px 10px;border-radius:6px;">Express Delivery — ₹99</span></div>
+                    <div class="payment-sub">Delivered in 2–3 business days</div>
+                </div>
+            </div>
+            <div class="payment-opt" id="del-sameday" onclick="selectDelivery(this, 199)">
+                <input type="radio" name="delivery" value="sameday">
+                <div>
+                    <div class="payment-label"><span style="background:#f43f5e;color:white;padding:4px 10px;border-radius:6px;">Same-Day Delivery — ₹199</span></div>
+                    <div class="payment-sub">Available in select cities only</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="checkout-card">
+            <h3>💳 Payment Method</h3>
+            <div class="payment-opt selected" onclick="selectPayment(this)">
+                <input type="radio" name="payment" value="cod" checked>
+                <div>
+                    <div class="payment-label"><span style="background:#4ade80;color:black;padding:4px 10px;border-radius:6px;">💵 Cash on Delivery</span></div>
+                    <div class="payment-sub">Pay when your order arrives</div>
+                </div>
+            </div>
+            <div class="payment-opt" onclick="selectPayment(this)">
+                <input type="radio" name="payment" value="card">
+                <div>
+                    <div class="payment-label"><span style="background:#06b6d4;color:black;padding:4px 10px;border-radius:6px;">💳 Credit / Debit Card</span></div>
+                    <div class="payment-sub">Visa, Mastercard, RuPay accepted</div>
+                </div>
+            </div>
+            <div class="payment-opt" onclick="selectPayment(this)">
+                <input type="radio" name="payment" value="upi">
+                <div>
+                    <div class="payment-label"><span style="background:#7c3aed;color:white;padding:4px 10px;border-radius:6px;">📱 UPI / Net Banking</span></div>
+                    <div class="payment-sub">Google Pay, PhonePe, Paytm & more</div>
+                </div>
+            </div>
+            <div class="payment-opt" onclick="selectPayment(this)">
+                <input type="radio" name="payment" value="wallet">
+                <div>
+                    <div class="payment-label"><span style="background:#fbbf24;color:black;padding:4px 10px;border-radius:6px;">👜 GlowMart Wallet</span></div>
+                    <div class="payment-sub">Use your wallet balance (₹0 available)</div>
+                </div>
+            </div>
+
+            <div id="card-fields" style="margin-top:20px;display:none;">
+                <div class="form-group">
+                    <label class="form-label">Card Number</label>
+                    <input type="text" class="form-input" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Name on Card</label>
+                        <input type="text" class="form-input" id="cardName" placeholder="Sanjana Pal">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Expiry (MM/YY)</label>
+                        <input type="text" class="form-input" id="cardExpiry" placeholder="12/27" maxlength="5">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">CVV</label>
+                        <input type="password" class="form-input" id="cardCvv" placeholder="•••" maxlength="4">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" style="width:100%;padding:18px;font-size:1.05rem;border-radius:14px;" id="placeOrderBtn" onclick="placeOrder()">
+            🎉 Place Order Securely
+        </button>
+        <p style="text-align:center;color:rgba(255,255,255,0.35);font-size:0.78rem;margin-top:10px;">🔒 Your payment is 100% secure and encrypted</p>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+        <div class="checkout-card" style="position:sticky;top:90px;">
+            <div class="summary-title" style="margin-bottom:16px;">🛍️ Order Summary</div>
+            <div id="order-items-list" style="margin-bottom:16px;max-height:300px;overflow-y:auto;">
+                <!-- injected -->
+            </div>
+            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin-bottom:14px;">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="co-subtotal">₹0</span>
+            </div>
+            <div class="summary-row">
+                <span>Discount</span>
+                <span class="summary-discount" id="co-discount">-₹0</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span id="co-delivery">FREE</span>
+            </div>
+            <div class="summary-row total" style="margin-top:10px;">
+                <span>TOTAL</span>
+                <span id="co-total">₹0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- Success Modal -->
+<div id="success-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:linear-gradient(135deg,#0d0521,#0a1628);border:1px solid rgba(124,58,237,0.4);border-radius:24px;padding:48px;text-align:center;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(124,58,237,0.3);">
+        <div style="font-size:72px;margin-bottom:20px;">🎉</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.8rem;margin-bottom:10px;">Order Placed!</h2>
+        <p style="color:rgba(255,255,255,0.6);margin-bottom:8px;">Your order <strong id="modal-order-id" style="color:#9d65f5;">#000</strong> has been successfully placed.</p>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:30px;">You will receive a confirmation email shortly. Thank you for shopping with GlowMart! ✨</p>
+        <a href="index.html" class="btn-primary" style="margin-right:12px;">🛍️ Continue Shopping</a>
+        <a href="profile.html" class="btn-secondary" style="margin-top:12px;">My Orders</a>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+let deliveryFee = 0;
+
+function selectPayment(el) {
+    document.querySelectorAll('.payment-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input[type=radio]').checked = true;
+    const val = el.querySelector('input').value;
+    document.getElementById('card-fields').style.display = val === 'card' ? 'block' : 'none';
+}
+
+function selectDelivery(el, fee) {
+    document.querySelectorAll('[id^=del-]').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input[type=radio]').checked = true;
+    deliveryFee = fee;
+    updateCheckoutSummary();
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function updateCheckoutSummary() {
+    const items = cart.items;
+    const subtotal = items.reduce((s,i) => s + i.price * i.quantity, 0);
+    const origTotal = items.reduce((s,i) => s + Math.round(i.price * 1.3) * i.quantity, 0);
+    const discount = origTotal - subtotal;
+    const baseDelivery = subtotal >= 999 ? 0 : 79;
+    const total = subtotal + deliveryFee + baseDelivery;
+
+    document.getElementById('co-subtotal').textContent = `₹${subtotal.toLocaleString()}`;
+    document.getElementById('co-discount').textContent = `-₹${discount.toLocaleString()}`;
+    document.getElementById('co-delivery').textContent = (deliveryFee + baseDelivery) === 0 ? 'FREE' : `₹${deliveryFee + baseDelivery}`;
+    document.getElementById('co-total').textContent = `₹${total.toLocaleString()}`;
+}
+
+function renderOrderItems() {
+    const items = cart.items;
+    document.getElementById('order-items-list').innerHTML = items.map(i => `
+        <div class="order-item-row">
+            <img class="order-item-img" src="${i.image}" alt="${i.name}" onerror="this.src='https://via.placeholder.com/60x72?text=G'">
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:600;font-size:0.85rem;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i.name}</div>
+                <div style="color:rgba(255,255,255,0.4);font-size:0.76rem;">Qty: ${i.quantity}</div>
+            </div>
+            <div style="font-weight:700;color:white;font-size:0.9rem;">₹${(i.price * i.quantity).toLocaleString()}</div>
+        </div>
+    `).join('');
+    updateCheckoutSummary();
+}
+
+async function placeOrder() {
+    if (!api.isLoggedIn()) {
+        showToast('Please login first');
+        setTimeout(() => window.location.href = 'login.html', 1200);
+        return;
+    }
+
+    const f = ['firstName','lastName','mobile','addr1','city','state','pincode'];
+    for (const fid of f) {
+        if (!document.getElementById(fid)?.value?.trim()) {
+            showToast('Please fill all required fields');
+            return;
+        }
+    }
+
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const addr1 = document.getElementById('addr1').value;
+    const addr2 = document.getElementById('addr2').value;
+    const city = document.getElementById('city').value;
+    const state = document.getElementById('state').value;
+    const pin = document.getElementById('pincode').value;
+    const shipping_address = `${firstName} ${lastName}, ${addr1}${addr2 ? ', ' + addr2 : ''}, ${city}, ${state} - ${pin}`;
+
+    const btn = document.getElementById('placeOrderBtn');
+    btn.textContent = '⏳ Placing Order…';
+    btn.disabled = true;
+
+    const items = cart.items;
+    const subtotal = items.reduce((s,i) => s + i.price * i.quantity, 0);
+    const total = subtotal + deliveryFee + (subtotal >= 999 ? 0 : 79);
+
+    try {
+        const res = await api.placeOrder({ items, total, shipping_address });
+        if (res.orderId) {
+            cart.clear();
+            document.getElementById('modal-order-id').textContent = `#${res.orderId}`;
+            document.getElementById('success-modal').style.display = 'flex';
+        } else {
+            showToast(res.error || 'Failed to place order');
+            btn.textContent = '🎉 Place Order Securely';
+            btn.disabled = false;
+        }
+    } catch(e) {
+        showToast('Order failed. Try again.');
+        btn.textContent = '🎉 Place Order Securely';
+        btn.disabled = false;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!api.isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    if (!cart.items.length) {
+        window.location.href = 'cart.html';
+        return;
+    }
+    renderOrderItems();
+});
+</script>
+</body>
+</html>

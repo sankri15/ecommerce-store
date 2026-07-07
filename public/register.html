@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Create your GlowMart account" />
+  <title>Create Account – GlowMart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 40%, #2d1b69 100%);
+      font-family: 'Inter', sans-serif;
+      padding: 20px;
+    }
+    .auth-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .auth-logo a {
+      text-decoration: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #7c3aed;
+    }
+    .auth-logo span { font-size: 2rem; }
+    .auth-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #000;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .auth-sub {
+      color: #555;
+      text-align: center;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      color: #000;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #000;
+      background: #fafafa;
+      outline: none;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .form-input:focus {
+      border-color: #7c3aed;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    .form-input::placeholder { color: #aaa; }
+    .error-msg {
+      color: #dc2626;
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 6px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,0.35); }
+    .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .auth-terms {
+      color: #666;
+      font-size: 0.8rem;
+      text-align: center;
+      margin: 14px 0;
+    }
+    .auth-terms a { color: #7c3aed; }
+    .auth-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+    .auth-link a { color: #7c3aed; font-weight: 600; text-decoration: none; }
+    .auth-benefits {
+      text-align: center;
+      margin-top: 18px;
+      color: #888;
+      font-size: 0.8rem;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 16px;
+    }
+    .alert-box {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: none;
+    }
+    .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span>🛍️</span>
+      <a href="index.html"> GlowMart</a>
+    </div>
+
+    <h1 class="auth-title">Create Account</h1>
+    <p class="auth-sub">Join GlowMart and start shopping today!</p>
+
+    <div class="alert-box alert-error" id="errorAlert"></div>
+    <div class="alert-box alert-success" id="successAlert"></div>
+
+    <form id="registerForm" novalidate autocomplete="on">
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" class="form-input" placeholder="e.g. Sanjana Pal" required autocomplete="name" />
+        <div class="error-msg" id="nameErr">Please enter your full name.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="you@example.com" required autocomplete="email" />
+        <div class="error-msg" id="emailErr">Please enter a valid email address.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="Min. 6 characters" required autocomplete="new-password" />
+        <div class="error-msg" id="passErr">Password must be at least 6 characters.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" class="form-input" placeholder="Repeat your password" required autocomplete="new-password" />
+        <div class="error-msg" id="confirmErr">Passwords do not match.</div>
+      </div>
+
+      <p class="auth-terms">
+        By registering you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>
+      </p>
+
+      <button type="submit" class="btn-primary" id="registerBtn">✨ Create My Account</button>
+    </form>
+
+    <p class="auth-link">Already have an account? <a href="login.html">Sign In</a></p>
+    <p class="auth-benefits">🚚 Free Shipping &nbsp;•&nbsp; 🔄 Easy Returns &nbsp;•&nbsp; 🏅 100% Originals</p>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    function showError(msg) {
+      const el = document.getElementById('errorAlert');
+      el.textContent = '⚠️ ' + msg;
+      el.style.display = 'block';
+      document.getElementById('successAlert').style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('successAlert');
+      el.textContent = '✅ ' + msg;
+      el.style.display = 'block';
+      document.getElementById('errorAlert').style.display = 'none';
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm_password').value;
+
+      // Validation — keep values in the form, just show error
+      if (!name) { showError('Please enter your full name.'); return; }
+      if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+      if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+      if (password !== confirm) { showError('Passwords do not match! Please re-enter.'); return; }
+
+      const btn = document.getElementById('registerBtn');
+      btn.textContent = '⏳ Creating account...';
+      btn.disabled = true;
+
+      try {
+        const res = await api.register(name, email, password);
+        if (res.message || res.token) {
+          showSuccess('Account created successfully! Redirecting to login...');
+          btn.textContent = '✅ Account Created!';
+          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        } else {
+          showError(res.error || 'Registration failed. Please try again.');
+          btn.textContent = '✨ Create My Account';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        showError('Server error. Please try again in a moment.');
+        btn.textContent = '✨ Create My Account';
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

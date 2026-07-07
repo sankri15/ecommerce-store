@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View product details, reviews and buy on GlowMart">
+    <title>Product – GlowMart</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-top">
+        <a href="index.html" class="logo-text">🛍️ GlowMart</a>
+        <div class="header-search">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search products…">
+        </div>
+        <nav class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="index.html#categories">Categories</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="wishlist.html" class="nav-icon-btn" title="Wishlist">🤍</a>
+            <a href="cart.html" class="nav-icon-btn" title="Cart">
+                🛒 <span class="cart-badge" id="cart-count">0</span>
+            </a>
+            <a href="profile.html" class="nav-icon-btn" title="Profile">👤</a>
+        </div>
+    </div>
+    <div class="marquee-strip" style="height:36px;display:flex;align-items:center;justify-content:center;gap:40px;font-size:12px;color:white;font-weight:600;">
+        <span style="background:#7c3aed;padding:4px 10px;border-radius:6px;">🚚 Free Delivery on orders ₹999+</span>
+        <span style="background:#f43f5e;padding:4px 10px;border-radius:6px;">🔄 14-Day Easy Returns</span>
+        <span style="background:#fbbf24;color:black;padding:4px 10px;border-radius:6px;">🏅 100% Originals Guaranteed</span>
+        <span style="background:#06b6d4;color:black;padding:4px 10px;border-radius:6px;">💳 Secure Payments</span>
+    </div>
+</header>
+
+<div class="page-title-bar" style="padding:20px 60px;">
+    <div class="breadcrumb">
+        <a href="index.html">Home</a> <span>/</span>
+        <span id="breadcrumb-category">Category</span> <span>/</span>
+        <span id="breadcrumb-name" style="color:white;">Product</span>
+    </div>
+</div>
+
+<div class="product-details-page" id="main-content">
+    <!-- Skeleton -->
+    <div class="product-details-grid">
+        <div class="skeleton" style="aspect-ratio:3/4;border-radius:18px;"></div>
+        <div style="padding:20px 0;">
+            <div class="skeleton" style="height:14px;width:40%;margin-bottom:14px;"></div>
+            <div class="skeleton" style="height:28px;width:80%;margin-bottom:10px;"></div>
+            <div class="skeleton" style="height:28px;width:60%;margin-bottom:28px;"></div>
+            <div class="skeleton" style="height:80px;border-radius:14px;margin-bottom:20px;"></div>
+            <div class="skeleton" style="height:52px;border-radius:14px;margin-bottom:12px;"></div>
+            <div class="skeleton" style="height:52px;border-radius:14px;"></div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function discountOrig(price) {
+    return Math.round(price * (1 + (Math.random() * 0.2 + 0.15)));
+}
+
+async function loadProduct() {
+    const id = new URLSearchParams(window.location.search).get('id');
+    const main = document.getElementById('main-content');
+    if (!id) { main.innerHTML = '<p style="text-align:center;color:white;padding:80px;">Product not found.</p>'; return; }
+
+    try {
+        const p = await api.getProduct(id);
+        if (p.error) throw new Error(p.error);
+
+        document.title = `${p.name} – GlowMart`;
+        document.getElementById('breadcrumb-category').textContent = p.category;
+        document.getElementById('breadcrumb-name').textContent = p.name;
+
+        // Use the primary image 2 times (Normal, and Flipped for "Left/Right")
+        const allImages = [p.image, p.image];
+
+        const orig = discountOrig(p.price);
+        const disc = Math.round(((orig - p.price) / orig) * 100);
+        const isWished = JSON.parse(localStorage.getItem('glowmart_wishlist') || '[]').includes(p.id);
+
+        const thumbsHTML = allImages.map((img, i) => {
+            const t = i===1 ? 'scaleX(-1)' : 'scale(1)';
+            return `<img src="${img}" class="thumb-img ${i===0?'active':''}" style="transform: ${t}; transition: all 0.3s;" alt="Angle ${i+1}" onclick="swapImage('${img}', this, '${t}')" onerror="this.style.display='none'">`;
+        }).join('');
+
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        const sizesHTML = p.category !== 'Beauty' && p.category !== 'Home' && p.category !== 'Accessories'
+            ? `<div class="info-section-label">SELECT SIZE</div>
+               <div class="size-selector">
+                   ${sizes.map((s,i) => `<button class="size-btn${i===2?' active':''}" onclick="selectSize(this)">${s}</button>`).join('')}
+               </div>` : '';
+
+        main.innerHTML = `
+        <div class="product-details-grid">
+            <div class="product-gallery-sticky">
+                <img id="main-img" class="main-product-image" src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x530?text=GlowMart'">
+                ${allImages.length > 1 ? `<div class="thumbnail-row">${thumbsHTML}</div>` : ''}
+            </div>
+
+            <div class="product-info-panel">
+                <div class="info-brand">${p.brand || 'GlowMart'}</div>
+                <h1 class="info-title">${p.name}</h1>
+
+                <div class="rating-row">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-count">4.2 (${120 + p.id * 7} ratings)</span>
+                    <span style="color:rgba(255,255,255,0.3);">|</span>
+                    <span style="color:var(--secondary);font-size:0.85rem;font-weight:600;">${Math.floor(30 + p.id * 3)} sold today</span>
+                </div>
+
+                <div class="info-price-row">
+                    <span class="info-price-current">₹${p.price.toLocaleString()}</span>
+                    <span class="info-price-original">₹${orig.toLocaleString()}</span>
+                    ${disc>0 ? `<span class="info-price-discount">${disc}% OFF</span>` : ''}
+                    <div class="info-price-tax">Inclusive of all taxes. Free shipping above ₹999.</div>
+                </div>
+
+                ${sizesHTML}
+
+                <div class="action-buttons">
+                    <button class="btn-bag" id="add-to-cart">🛍️ Add to Bag</button>
+                    <button class="btn-wish ${isWished ? 'active' : ''}" id="add-to-wishlist">${isWished ? '❤️ Wishlisted' : '🤍 Wishlist'}</button>
+                </div>
+
+                <div class="delivery-section">
+                    <div class="delivery-title">🚚 DELIVERY OPTIONS</div>
+                    <div class="pincode-box">
+                        <input type="text" class="pincode-input" id="pincode-input" placeholder="Enter pincode" maxlength="6">
+                        <button class="pincode-btn" onclick="checkDelivery()">Check</button>
+                    </div>
+                    <div class="pincode-note">Enter your 6-digit PIN code to check delivery time & Pay on Delivery availability.</div>
+                    <div id="delivery-result" style="margin-top:8px;font-size:0.85rem;"></div>
+                </div>
+
+                <ul class="policy-list">
+                    <li class="policy-item">
+                        <span class="policy-icon">🏅</span>
+                        <div><strong>100% Original Products</strong><br><span style="color:rgba(255,255,255,0.5);font-size:0.82rem;">All products are genuine and sourced directly from brands.</span></div>
+                    </li>
+                    <li class="policy-item">
+                        <span class="policy-icon">🔄</span>
+                        <div><strong>14-Day Easy Returns & Exchange</strong><br><span style="color:rgba(255,255,255,0.5);font-size:0.82rem;">Not satisfied? Return or exchange within 14 days, no questions asked.</span></div>
+                    </li>
+                    <li class="policy-item">
+                        <span class="policy-icon">💵</span>
+                        <div><strong>Pay on Delivery Available</strong><br><span style="color:rgba(255,255,255,0.5);font-size:0.82rem;">Cash on delivery available on select pin codes.</span></div>
+                    </li>
+                    <li class="policy-item">
+                        <span class="policy-icon">🔒</span>
+                        <div><strong>Secure Payment</strong><br><span style="color:rgba(255,255,255,0.5);font-size:0.82rem;">Your payment information is 256-bit SSL encrypted.</span></div>
+                    </li>
+                </ul>
+
+                <hr class="info-divider">
+
+                <div class="description-section">
+                    <h4>📋 PRODUCT DETAILS</h4>
+                    <p style="margin-bottom:16px;">${p.description}</p>
+                </div>
+
+                <div class="description-section" style="margin-top:16px;">
+                    <h4>🧵 MATERIAL & CARE</h4>
+                    <ul class="material-list">
+                        <li>Premium quality fabric, soft & breathable</li>
+                        <li>Machine wash cold with similar colours</li>
+                        <li>Do not bleach or tumble dry on high heat</li>
+                        <li>Iron on low setting, do not dry clean</li>
+                        <li>Imported — Brand: <strong>${p.brand || 'GlowMart'}</strong></li>
+                    </ul>
+                </div>
+
+                <div class="description-section" style="margin-top:24px;">
+                    <h4>🚚 SHIPPING DETAILS</h4>
+                    <ul class="material-list">
+                        <li>Free standard shipping on orders above ₹999</li>
+                        <li>Standard delivery: 5–7 business days</li>
+                        <li>Express delivery: 2–3 business days (additional ₹99)</li>
+                        <li>Same-day delivery available in select cities</li>
+                        <li>Track your order in real-time from your profile</li>
+                    </ul>
+                </div>
+
+                <div class="description-section" style="margin-top:24px;">
+                    <h4>🔄 RETURN & EXCHANGE POLICY</h4>
+                    <ul class="material-list">
+                        <li>14-day return window from date of delivery</li>
+                        <li>Item must be unused, unwashed with original tags</li>
+                        <li>Initiate return from your GlowMart profile page</li>
+                        <li>Refund processed within 5–7 business days</li>
+                        <li>Exchange available for size & colour (subject to availability)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>`;
+
+        // Event listeners
+        document.getElementById('add-to-cart').addEventListener('click', () => {
+            cart.add(p);
+            showToast(`✅ ${p.name} added to Bag!`);
+        });
+
+        document.getElementById('add-to-wishlist').addEventListener('click', async () => {
+            let wl = JSON.parse(localStorage.getItem('glowmart_wishlist') || '[]');
+            const btn = document.getElementById('add-to-wishlist');
+            if (wl.includes(p.id)) {
+                wl = wl.filter(i => i !== p.id);
+                btn.textContent = '🤍 Wishlist';
+                btn.classList.remove('active');
+                showToast('Removed from Wishlist');
+            } else {
+                wl.push(p.id);
+                btn.textContent = '❤️ Wishlisted';
+                btn.classList.add('active');
+                showToast('❤️ Added to Wishlist!');
+                if (api.isLoggedIn()) {
+                    try { await api.addToWishlist(p.id); } catch(e) {}
+                }
+            }
+            localStorage.setItem('glowmart_wishlist', JSON.stringify(wl));
+        });
+
+    } catch(e) {
+        main.innerHTML = '<p style="text-align:center;color:white;padding:80px;">⚠️ Product not found.</p>';
+    }
+}
+
+function swapImage(src, el, transformStr) {
+    const mainImg = document.getElementById('main-img');
+    mainImg.style.opacity = 0;
+    setTimeout(() => { 
+        mainImg.src = src; 
+        if (transformStr) mainImg.style.transform = transformStr;
+        mainImg.style.opacity = 1; 
+    }, 200);
+    document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function selectSize(btn) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+
+
+function checkDelivery() {
+    const pin = document.getElementById('pincode-input').value;
+    const result = document.getElementById('delivery-result');
+    if (!pin || pin.length !== 6 || isNaN(pin)) {
+        result.innerHTML = '<span style="color:#f43f5e;">Please enter a valid 6-digit PIN code.</span>';
+        return;
+    }
+    result.innerHTML = '<span style="color:#4ade80;">✅ Delivery available! Expected in 3–5 business days. Cash on Delivery available.</span>';
+}
+
+document.addEventListener('DOMContentLoaded', loadProduct);
+</script>
+</body>
+</html>
